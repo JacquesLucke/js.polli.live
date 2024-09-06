@@ -28,6 +28,7 @@ jobs:
           npx webpack
 
       - name: Upload artifact
+        if: ${{ matrix.node-version == '22.x' }}
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
