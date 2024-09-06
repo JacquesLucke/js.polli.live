@@ -64,7 +64,7 @@ export function create_join_elem() {
   const join_elem = document.createElement("div");
   join_elem.classList.add("join-poll");
   join_elem.innerHTML = `
-    Join at <code>${globals.host}</code> with <code class="session-id"></code>
+    Join at <code>${globals.host}</code> with <code class="polli-live-session-id"></code>
     `;
   join_elem.addEventListener("click", show_settings);
   return join_elem;
@@ -128,7 +128,9 @@ async function update_poll_qr_codes() {
 }
 
 async function polli_live_session_changed() {
-  for (const session_id_elem of document.getElementsByClassName("session-id")) {
+  for (const session_id_elem of document.getElementsByClassName(
+    "polli-live-session-id"
+  )) {
     if (globals.connection.has_session) {
       session_id_elem.innerText = globals.connection.session;
     } else {
