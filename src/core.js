@@ -27,6 +27,7 @@ export function initialize(options) {
   );
   globals.host = options.server.replace("http://", "").replace("https://", "");
   globals.settings_elem = prepare_settings_popover();
+  init_empty_qr_codes();
 
   setTimeout(async () => {
     await globals.connection.init_session();
@@ -113,17 +114,36 @@ function find_poll_on_current_slide() {
 
 async function update_poll_qr_codes() {
   const poll_link = globals.connection.poll_link;
-  const data_link = await QRCode.toDataURL(poll_link, {
-    color: {
-      light: "#00000000",
-      dark: "#000000ff",
-    },
-    margin: 0,
-    errorCorrectionLevel: "Q",
-  });
-  for (const elem of document.getElementsByClassName("polli-live-qr-code")) {
+  let data_link;
+  if (poll_link) {
+    data_link = await QRCode.toDataURL(poll_link, {
+      color: {
+        light: "#00000000",
+        dark: "#000000ff",
+      },
+      margin: 0,
+      errorCorrectionLevel: "Q",
+    });
+  } else {
+    data_link = init_empty_qr_codes();
+  }
+  for (const elem of get_qr_code_image_elems()) {
     elem.src = data_link;
   }
+}
+
+function get_single_white_pixel_data_link() {
+  return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=";
+}
+
+function init_empty_qr_codes() {
+  for (const elem of get_qr_code_image_elems()) {
+    elem.src = get_single_white_pixel_data_link();
+  }
+}
+
+function get_qr_code_image_elems() {
+  return document.getElementsByClassName("polli-live-qr-code");
 }
 
 async function polli_live_session_changed() {
