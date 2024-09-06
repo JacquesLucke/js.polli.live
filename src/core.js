@@ -104,7 +104,7 @@ async function start_poll(poll) {
 }
 
 function find_poll_on_current_slide() {
-  const container = document;
+  let container = document;
   if (typeof Reveal !== "undefined") {
     container = Reveal.getCurrentSlide();
   }
