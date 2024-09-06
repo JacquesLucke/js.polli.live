@@ -9,7 +9,6 @@ export function initialize(options) {
   options = {
     server: "https://polli.live",
     min_poll_interval_ms: 100,
-    qr_code_size: 256,
     ...options,
   };
 
