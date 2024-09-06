@@ -6,6 +6,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: "js.polli.live",
+      template: "./src/index.html",
+      scriptLoading: "blocking",
+      inject: "head",
     }),
   ],
   output: {
