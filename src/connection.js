@@ -61,6 +61,7 @@ export class PolliLiveConnection {
         this.token = new_session.token;
         return;
       }
+    } catch {
     } finally {
       this.on_session_change();
     }

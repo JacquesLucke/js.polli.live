@@ -125,7 +125,7 @@ async function update_poll_qr_codes() {
       errorCorrectionLevel: "Q",
     });
   } else {
-    data_link = init_empty_qr_codes();
+    data_link = get_single_white_pixel_data_link();
   }
   for (const elem of get_qr_code_image_elems()) {
     elem.src = data_link;
