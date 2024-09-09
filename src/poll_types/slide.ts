@@ -4,12 +4,21 @@ import { create_join_elem } from "../core";
 export class SlidePoll {
   static class_name = "poll-slide";
 
-  constructor(poll_container) {
+  container: HTMLElement;
+  id: string;
+  options: string[];
+
+  result_elem: HTMLDivElement;
+  options_elem: HTMLDivElement;
+
+  constructor(poll_container: HTMLElement) {
     this.container = poll_container;
     this.id = this.container.id;
 
     this.options = [];
-    for (const option_elem of this.container.children) {
+    for (const option_elem of Array.from(
+      this.container.querySelectorAll("option")
+    )) {
       this.options.push(option_elem.innerHTML);
     }
   }
@@ -36,7 +45,7 @@ export class SlidePoll {
     this.container.appendChild(join_elem);
   }
 
-  update_with_responses(response_by_user) {
+  update_with_responses(response_by_user: Map<string, string>) {
     this.result_elem.innerHTML = "";
 
     this.result_elem.style.backgroundColor = "#dba667";
@@ -111,7 +120,7 @@ export class SlidePoll {
     return page;
   }
 
-  is_valid_response(response) {
+  is_valid_response(response: string) {
     return true;
   }
 }

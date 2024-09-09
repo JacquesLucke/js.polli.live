@@ -25,6 +25,11 @@ module.exports = {
         test: /\.html$/i,
         use: "raw-loader",
       },
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
     ],
   },
 };

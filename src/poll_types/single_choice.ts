@@ -4,13 +4,26 @@ import { create_join_elem } from "../core";
 export class SingleChoicePoll {
   static class_name = "poll-single-choice";
 
-  constructor(poll_container) {
+  container: HTMLElement;
+  id: string;
+  options: string[];
+  options_html: string[];
+  option_colors: string[];
+  hide_results_initially: boolean;
+  results_revealed: boolean;
+
+  options_container: HTMLDivElement;
+  result_elem: HTMLDivElement;
+
+  constructor(poll_container: HTMLElement) {
     this.container = poll_container;
     this.id = this.container.id;
 
     this.options = [];
     this.options_html = [];
-    for (const option_elem of this.container.children) {
+    for (const option_elem of Array.from(
+      this.container.querySelectorAll("option")
+    )) {
       this.options.push(option_elem.innerText);
       this.options_html.push(option_elem.innerHTML);
     }
@@ -52,7 +65,7 @@ export class SingleChoicePoll {
     this.container.appendChild(join_elem);
   }
 
-  update_with_responses(response_by_user) {
+  update_with_responses(response_by_user: Map<string, string>) {
     // Clear old results.
     this.result_elem.innerHTML = "";
 
@@ -134,7 +147,7 @@ export class SingleChoicePoll {
     return page;
   }
 
-  is_valid_response(response) {
+  is_valid_response(response: string) {
     return this.options.includes(response);
   }
 }
