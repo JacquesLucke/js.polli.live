@@ -1,5 +1,12 @@
 export class PollResponses {
-  constructor(local_storage_key, is_valid_response_fn) {
+  local_storage_key: string;
+  is_valid_response_fn: (poll_id: string, response: string) => boolean;
+  responses_by_poll_id: Map<string, Map<string, string>>;
+
+  constructor(
+    local_storage_key: string,
+    is_valid_response_fn: (poll_id: string, response: string) => boolean
+  ) {
     this.local_storage_key = local_storage_key;
     this.is_valid_response_fn = is_valid_response_fn;
     this.responses_by_poll_id = new Map();
@@ -37,7 +44,7 @@ export class PollResponses {
     return JSON.stringify(responses);
   }
 
-  try_add_from_storage_string(storage_str) {
+  try_add_from_storage_string(storage_str: string) {
     try {
       const responses = JSON.parse(storage_str);
       for (const { poll_id, user_id, data } of responses) {
@@ -46,7 +53,7 @@ export class PollResponses {
     } catch {}
   }
 
-  try_add_response(poll_id, user_id, data) {
+  try_add_response(poll_id: string, user_id: string, data: string) {
     if (!poll_id || !user_id || !data) {
       return;
     }
@@ -59,7 +66,7 @@ export class PollResponses {
     this.responses_by_poll_id.get(poll_id).set(user_id, data);
   }
 
-  responses_for_poll(poll_id) {
+  responses_for_poll(poll_id: string): Map<string, string> {
     const responses = this.responses_by_poll_id.get(poll_id);
     if (responses) {
       return responses;

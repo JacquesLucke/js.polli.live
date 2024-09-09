@@ -1,9 +1,9 @@
 import QRCode from "qrcode";
 import settings_html from "./settings.html";
 
-import { PollResponses } from "./responses";
-import { Polls } from "./polls";
-import { PolliLiveConnection } from "./connection";
+import { PollResponses } from "./responses.ts";
+import { Polls } from "./polls.ts";
+import { PolliLiveConnection } from "./connection.ts";
 
 export function initialize(options) {
   options = {

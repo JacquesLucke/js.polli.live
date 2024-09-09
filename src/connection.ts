@@ -1,3 +1,5 @@
+import { PollResponses } from "./responses";
+
 class FetchResponsesBadStatusCode extends Error {
   constructor() {
     super(
@@ -7,12 +9,24 @@ class FetchResponsesBadStatusCode extends Error {
 }
 
 export class PolliLiveConnection {
+  url: string;
+  responses: PollResponses;
+  local_storage_key: string;
+  on_session_change: () => void;
+  on_response_change: () => void;
+  session: string | null;
+  token: string | null;
+  next_response: number;
+  should_fetch_responses: boolean;
+  last_set_page: string | null;
+  last_fetch_loop_interval: number;
+
   constructor(
-    url,
-    responses,
-    local_storage_key,
-    on_session_change,
-    on_response_change
+    url: string,
+    responses: PollResponses,
+    local_storage_key: string,
+    on_session_change: () => void,
+    on_response_change: () => void
   ) {
     this.url = url;
     this.responses = responses;
@@ -24,7 +38,7 @@ export class PolliLiveConnection {
     this.next_response = 0;
     this.should_fetch_responses = false;
     this.last_set_page = null;
-    this.#start_fetch_responses_loop();
+    this.start_fetch_responses_loop();
   }
 
   get has_session() {
@@ -73,7 +87,7 @@ export class PolliLiveConnection {
     await this.init_session();
   }
 
-  async set_page(page) {
+  async set_page(page: string) {
     this.last_set_page = page;
     if (!this.session || !this.token) {
       return false;
@@ -102,7 +116,7 @@ export class PolliLiveConnection {
     this.should_fetch_responses = false;
   }
 
-  #start_fetch_responses_loop() {
+  start_fetch_responses_loop() {
     const min_poll_interval_ms = 100;
     this.last_fetch_loop_interval = min_poll_interval_ms;
     const handler = async () => {
@@ -115,7 +129,7 @@ export class PolliLiveConnection {
           return;
         }
         try {
-          if (await this.#fetch_new_responses()) {
+          if (await this.fetch_new_responses()) {
             this.on_response_change();
           }
         } catch (err) {
@@ -141,18 +155,23 @@ export class PolliLiveConnection {
     handler();
   }
 
-  async #fetch_new_responses() {
+  async fetch_new_responses() {
     if (!this.session) {
       return false;
     }
 
-    let responses = await fetch(
+    interface ResponsesLayout {
+      next_start: number;
+      responses_by_user: object;
+    }
+
+    let responses_raw = await fetch(
       `${this.url}/responses?session=${this.session}&start=${this.next_response}`
     );
-    if (!responses.ok) {
+    if (!responses_raw.ok) {
       throw new FetchResponsesBadStatusCode();
     }
-    responses = await responses.json();
+    let responses: ResponsesLayout = await responses_raw.json();
     this.next_response = responses.next_start;
 
     let found_new_responses = false;
