@@ -1,8 +1,8 @@
-import html_template from "./slide.html";
+import html_template from "./continuum.html";
 import { create_join_elem } from "../core";
 
-export class SlidePoll {
-  static class_name = "poll-slide";
+export class ContinuumPoll {
+  static class_name = "polli-live-continuum";
 
   container: HTMLElement;
   id: string;

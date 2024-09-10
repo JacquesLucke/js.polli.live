@@ -1,8 +1,8 @@
-import html_template from "./single_choice.html";
+import html_template from "./choice.html";
 import { create_join_elem } from "../core";
 
-export class SingleChoicePoll {
-  static class_name = "poll-single-choice";
+export class ChoicePoll {
+  static class_name = "polli-live-choice";
 
   container: HTMLElement;
   id: string;
