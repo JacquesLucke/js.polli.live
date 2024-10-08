@@ -10,10 +10,16 @@ export class Polls {
   }
 
   gather(root_elem: HTMLElement) {
+    const found_poll_ids: Set<string> = new Set();
     for (const poll_type of this.poll_types) {
       for (const poll_container of Array.from(
         root_elem.getElementsByClassName(poll_type.class_name)
       )) {
+        const poll_id = poll_container.id;
+        if (found_poll_ids.has(poll_id)) {
+          console.error("Duplicate poll id:", poll_id);
+        }
+        found_poll_ids.add(poll_id);
         this.polls.push(new poll_type(poll_container));
       }
     }
