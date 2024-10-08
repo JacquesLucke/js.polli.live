@@ -86,6 +86,12 @@ function prepare_settings_popover() {
   document
     .getElementById("polli-live-settings")
     .addEventListener("click", hide_settings);
+  document
+    .getElementById("polli-live-open-poll-btn")
+    .addEventListener("click", () => {
+      window.open(globals.connection.poll_link, "_blank");
+      hide_settings();
+    });
 
   return document.getElementById("polli-live-settings");
 }
@@ -155,6 +161,9 @@ async function polli_live_session_changed() {
     } else {
       session_id_elem.innerText = "...";
     }
+  }
+  for (const host_elem of document.getElementsByClassName("polli-live-host")) {
+    host_elem.innerText = `${globals.host}`;
   }
 
   update_poll_qr_codes();

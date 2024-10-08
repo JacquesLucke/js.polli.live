@@ -19,7 +19,6 @@
       transform: translate(-50%, -50%);
     "
   >
-    <div><button id="polli-live-new-session-btn">New Session</button></div>
     <img
       class="polli-live-qr-code"
       style="
@@ -30,6 +29,32 @@
         width: min(70vw, 70vh);
       "
     />
-    <div><button id="polli-live-close-settings-btn">Close</button></div>
+    <div
+      style="
+        background-color: white;
+        padding: 0.5em;
+        border-radius: 0.2em;
+        font-size: larger;
+        text-align: center;
+      "
+      id="polli-live-open-poll-btn"
+    >
+      <code class="polli-live-host"></code> with
+      <code class="polli-live-session-id"></code>
+    </div>
+    <div style="display: flex; justify-content: center; font-size: larger">
+      <button
+        id="polli-live-new-session-btn"
+        style="padding: 0.5em; margin: 0.5em; border-radius: 0.3em"
+      >
+        New Session
+      </button>
+      <button
+        id="polli-live-close-settings-btn"
+        style="padding: 0.5em; margin: 0.5em; border-radius: 0.3em"
+      >
+        Close
+      </button>
+    </div>
   </div>
 </div>
