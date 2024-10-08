@@ -91,7 +91,7 @@
       // multiple_choice_options = ["Artist", "Developer", "Teacher", "Other"];
       // option_colors = ["#67B8DB", "#DB7873", "#9CDB67", "#DBA667"];
 
-      const response_storage_key = `polli-live-response-${polli_live.get_session()}-${poll_id}`;
+      const response_storage_key = `polli-live-response-${polli_live.get_session_id()}-${poll_id}`;
       const vote_container_elem = document.getElementById("vote-container");
 
       async function main() {
