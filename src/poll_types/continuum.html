@@ -86,7 +86,7 @@
       let poll_id = "POLL_ID";
       let poll_options = "POLL_OPTIONS";
 
-      const response_storage_key = `polli-live-response-${poll_id}`;
+      const response_storage_key = `polli-live-response-${polli_live.get_session()}-${poll_id}`;
 
       const vote_container_elem = document.getElementById("vote-container");
       const options_container_elem = document.getElementById("options");
