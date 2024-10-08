@@ -12,6 +12,7 @@ export class ChoicePoll {
   hide_answer_initially: boolean;
   answers_revealed: boolean;
   multiple_choice: boolean;
+  allow_more_responses: boolean;
 
   options_container: HTMLDivElement;
   result_elem: HTMLDivElement;
@@ -33,6 +34,7 @@ export class ChoicePoll {
     this.hide_answer_initially =
       this.container.hasAttribute("data-hide-answer");
     this.answers_revealed = !this.hide_answer_initially;
+    this.allow_more_responses = true;
     this.multiple_choice = this.container.hasAttribute("data-multiple-choice");
   }
 
@@ -68,6 +70,10 @@ export class ChoicePoll {
   }
 
   update_with_responses(response_by_user: Map<string, string>) {
+    if (!this.allow_more_responses) {
+      return;
+    }
+
     // Clear old results.
     this.result_elem.innerHTML = "";
 
@@ -132,12 +138,14 @@ export class ChoicePoll {
         option_elem.innerHTML = `${count}`;
         option_elem.style.backgroundColor = "#464646";
       }
-
-      option_elem.addEventListener("click", async () => {
-        this.answers_revealed = true;
-        this.options_container.style.display = "None";
-        this.update_with_responses(response_by_user);
-      });
+      if (!this.answers_revealed) {
+        option_elem.addEventListener("click", async () => {
+          this.answers_revealed = true;
+          this.options_container.style.display = "None";
+          this.update_with_responses(response_by_user);
+          this.allow_more_responses = false;
+        });
+      }
     }
   }
 
