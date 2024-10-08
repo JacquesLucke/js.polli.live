@@ -86,6 +86,7 @@
       let poll_id = "POLL_ID";
       let multiple_choice_options = "MULTIPLE_CHOICE_OPTIONS";
       let option_colors = "MULTIPLE_CHOICE_COLORS";
+      let is_multiple_choice = "IS_MULTIPLE_CHOICE";
 
       // multiple_choice_options = ["Artist", "Developer", "Teacher", "Other"];
       // option_colors = ["#67B8DB", "#DB7873", "#9CDB67", "#DBA667"];
@@ -99,7 +100,15 @@
         vote_container_elem.classList.add(
           `vote-container-${multiple_choice_options.length}`
         );
-        const old_option = localStorage.getItem(response_storage_key);
+        let old_options = localStorage.getItem(response_storage_key);
+        try {
+          old_options = JSON.parse(old_options);
+        } catch {
+          old_options = [];
+        }
+        if (!Array.isArray(old_options)) {
+          old_options = [];
+        }
         for (const option_i in multiple_choice_options) {
           const option = multiple_choice_options[option_i];
           const option_elem = document.createElement("div");
@@ -107,23 +116,36 @@
           option_elem.style.backgroundColor = option_colors[option_i];
           option_elem.style.color = "black";
           option_elem.classList.add("button");
-          if (old_option === option) {
+          if (old_options.includes(option)) {
             option_elem.classList.add("selected");
           }
           vote_container_elem.appendChild(option_elem);
           option_elem.addEventListener("click", () => {
-            onclick_option(option_elem, option);
+            onclick_option(option_elem);
           });
         }
       }
 
-      function onclick_option(selected_option_elem, option) {
-        for (const elem of vote_container_elem.children) {
-          elem.classList.remove("selected");
+      function onclick_option(selected_option_elem) {
+        if (!is_multiple_choice) {
+          for (const elem of vote_container_elem.children) {
+            elem.classList.remove("selected");
+          }
+          selected_option_elem.classList.add("selected");
+        } else {
+          selected_option_elem.classList.toggle("selected");
         }
-        selected_option_elem.classList.add("selected");
-        polli_live.respond(JSON.stringify({ poll_id, data: option }));
-        localStorage.setItem(response_storage_key, option);
+        const choosen_options = [];
+        for (const elem of vote_container_elem.children) {
+          if (elem.classList.contains("selected")) {
+            choosen_options.push(elem.innerText);
+          }
+        }
+        const choosen_options_json = JSON.stringify(choosen_options);
+        polli_live.respond(
+          JSON.stringify({ poll_id, data: choosen_options_json })
+        );
+        localStorage.setItem(response_storage_key, choosen_options_json);
       }
 
       setTimeout(main, 0);

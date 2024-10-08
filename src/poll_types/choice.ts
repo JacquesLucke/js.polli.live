@@ -9,8 +9,9 @@ export class ChoicePoll {
   options: string[];
   options_html: string[];
   option_colors: string[];
-  hide_results_initially: boolean;
-  results_revealed: boolean;
+  hide_answer_initially: boolean;
+  answers_revealed: boolean;
+  multiple_choice: boolean;
 
   options_container: HTMLDivElement;
   result_elem: HTMLDivElement;
@@ -29,15 +30,16 @@ export class ChoicePoll {
     }
     this.option_colors = ["#67B8DB", "#DB7873", "#9CDB67", "#DBA667"];
 
-    this.hide_results_initially =
-      this.container.hasAttribute("data-hide-result");
-    this.results_revealed = !this.hide_results_initially;
+    this.hide_answer_initially =
+      this.container.hasAttribute("data-hide-answer");
+    this.answers_revealed = !this.hide_answer_initially;
+    this.multiple_choice = this.container.hasAttribute("data-multiple-choice");
   }
 
   initialize() {
     this.container.innerHTML = "";
 
-    if (this.hide_results_initially) {
+    if (this.hide_answer_initially) {
       this.options_container = document.createElement("div");
       this.container.appendChild(this.options_container);
       this.options_container.style.display = "flex";
@@ -75,19 +77,25 @@ export class ChoicePoll {
     }
 
     let responses_num = 0;
-    for (const choosen_option of response_by_user.values()) {
-      if (!this.options.includes(choosen_option)) {
+    for (const choosen_options_json of response_by_user.values()) {
+      const choosen_options: string[] = JSON.parse(choosen_options_json);
+      if (!this.multiple_choice && choosen_options.length > 1) {
         continue;
       }
-      responses_num += 1;
-      count_by_option.set(
-        choosen_option,
-        count_by_option.get(choosen_option) + 1
-      );
+      for (const choosen_option of choosen_options) {
+        if (!this.options.includes(choosen_option)) {
+          continue;
+        }
+        responses_num += 1;
+        count_by_option.set(
+          choosen_option,
+          count_by_option.get(choosen_option) + 1
+        );
+      }
     }
 
     const sorted_options = [...this.options];
-    if (this.hide_results_initially) {
+    if (this.hide_answer_initially) {
       // Sort by count in case the results should be hidden initially.
       // Otherwise, it's obvious which bar corresponds to which option.
       sorted_options.sort(
@@ -117,7 +125,7 @@ export class ChoicePoll {
       const percentage = (count / Math.max(1, responses_num)) * 100;
       option_elem.style.width = `${percentage * 0.9}%`;
 
-      if (this.results_revealed) {
+      if (this.answers_revealed) {
         option_elem.innerHTML = `${option_html}: ${count}`;
         option_elem.style.backgroundColor = this.option_colors[option_i];
       } else {
@@ -126,7 +134,7 @@ export class ChoicePoll {
       }
 
       option_elem.addEventListener("click", async () => {
-        this.results_revealed = true;
+        this.answers_revealed = true;
         this.options_container.style.display = "None";
         this.update_with_responses(response_by_user);
       });
@@ -144,10 +152,34 @@ export class ChoicePoll {
       '"MULTIPLE_CHOICE_COLORS"',
       JSON.stringify(this.option_colors)
     );
+    page = page.replace(
+      '"IS_MULTIPLE_CHOICE"',
+      this.multiple_choice.toString()
+    );
     return page;
   }
 
   is_valid_response(response: string) {
-    return this.options.includes(response);
+    let choosen_options;
+    try {
+      choosen_options = JSON.parse(response);
+    } catch {
+      return false;
+    }
+    if (!Array.isArray(choosen_options)) {
+      return false;
+    }
+    if (!choosen_options.every((item) => typeof item === "string")) {
+      return false;
+    }
+    if (!this.multiple_choice && choosen_options.length > 1) {
+      return false;
+    }
+    for (const choosen_option of choosen_options) {
+      if (!this.options.includes(choosen_option)) {
+        return false;
+      }
+    }
+    return true;
   }
 }
