@@ -14,19 +14,11 @@
         border: 0;
         font-family: monospace;
         font-size: large;
-        color: white;
+        color: rgb(0, 0, 0);
       }
 
       html,
       body {
-        height: 100%;
-        width: 100%;
-      }
-
-      #page {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 3fr 1fr;
         height: 100%;
         width: 100%;
       }
@@ -36,6 +28,12 @@
         height: 100%;
         width: 100%;
         background-color: #dba667;
+      }
+
+      input {
+        width: 100%;
+        padding-top: 1em;
+        padding-bottom: 1em;
       }
 
       #next-button {
@@ -50,11 +48,26 @@
         cursor: pointer;
         border: 1em solid transparent;
       }
+
+      #options {
+        display: flex;
+        justify-content: space-between;
+        /* background-color: #4f546b; */
+      }
+
+      #options > div {
+        padding: 0.5em;
+      }
+
+      #slider-with-options {
+        margin-top: auto;
+        margin-bottom: auto;
+      }
     </style>
   </head>
   <body>
-    <div id="page">
-      <div id="vote-container">
+    <div id="vote-container">
+      <div id="slider-with-options">
         <input
           type="range"
           min="0"
@@ -63,15 +76,21 @@
           class="slider"
           id="slider"
         />
+        <div id="options"></div>
       </div>
-      <div id="next-button" class="button">Next</div>
     </div>
 
     <script>
       let poll_id = "POLL_ID";
-      const option_colors = "MULTIPLE_CHOICE_COLORS";
-      // const option_colors = ["#67B8DB", "#DB7873", "#9CDB67", "#DBA667"];
+      let poll_options = "POLL_OPTIONS";
       const vote_container_elem = document.getElementById("vote-container");
+      const options_container_elem = document.getElementById("options");
+
+      for (const option of poll_options) {
+        const option_elem = document.createElement("div");
+        option_elem.innerHTML = option;
+        options_container_elem.appendChild(option_elem);
+      }
 
       async function main() {
         polli_live.auto_reload();
@@ -81,10 +100,6 @@
           polli_live.respond(JSON.stringify({ poll_id, data: slider.value }));
         });
       }
-
-      document.getElementById("next-button").addEventListener("click", () => {
-        location.reload();
-      });
 
       setTimeout(main, 0);
     </script>

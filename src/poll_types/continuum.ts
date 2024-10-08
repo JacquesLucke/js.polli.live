@@ -117,6 +117,7 @@ export class ContinuumPoll {
   async get_poll_page() {
     let page = html_template;
     page = page.replace("POLL_ID", this.id);
+    page = page.replace('"POLL_OPTIONS"', JSON.stringify(this.options));
     return page;
   }
 
