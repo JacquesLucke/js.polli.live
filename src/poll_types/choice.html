@@ -23,14 +23,6 @@
         width: 100%;
       }
 
-      #page {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 3fr 1fr;
-        height: 100%;
-        width: 100%;
-      }
-
       #vote-container {
         display: grid;
         height: 100%;
@@ -75,27 +67,30 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        border: 1em solid transparent;
+        border-width: 0.5em;
+        border-style: solid;
+        border-color: transparent;
+        box-sizing: border-box;
       }
 
       .selected {
-        border: 0.5em solid rgba(0, 0, 0, 0.4);
+        border-color: rgba(0, 0, 0, 0.3);
       }
     </style>
   </head>
   <body>
-    <div id="page">
-      <div id="vote-container"></div>
-      <div id="next-button" class="button">Next</div>
-    </div>
+    <div id="vote-container"></div>
 
     <script>
+      // These are replaced in `ChoicePoll.get_poll_page`.
       let poll_id = "POLL_ID";
       let multiple_choice_options = "MULTIPLE_CHOICE_OPTIONS";
-      // multiple_choice_options = ["Artist", "Developer", "Teacher", "Other"];
+      let option_colors = "MULTIPLE_CHOICE_COLORS";
 
-      const option_colors = "MULTIPLE_CHOICE_COLORS";
-      // const option_colors = ["#67B8DB", "#DB7873", "#9CDB67", "#DBA667"];
+      // multiple_choice_options = ["Artist", "Developer", "Teacher", "Other"];
+      // option_colors = ["#67B8DB", "#DB7873", "#9CDB67", "#DBA667"];
+
+      const response_storage_key = `polli-live-response-${poll_id}`;
       const vote_container_elem = document.getElementById("vote-container");
 
       async function main() {
@@ -104,6 +99,7 @@
         vote_container_elem.classList.add(
           `vote-container-${multiple_choice_options.length}`
         );
+        const old_option = localStorage.getItem(response_storage_key);
         for (const option_i in multiple_choice_options) {
           const option = multiple_choice_options[option_i];
           const option_elem = document.createElement("div");
@@ -111,6 +107,9 @@
           option_elem.style.backgroundColor = option_colors[option_i];
           option_elem.style.color = "black";
           option_elem.classList.add("button");
+          if (old_option === option) {
+            option_elem.classList.add("selected");
+          }
           vote_container_elem.appendChild(option_elem);
           option_elem.addEventListener("click", () => {
             onclick_option(option_elem, option);
@@ -124,11 +123,8 @@
         }
         selected_option_elem.classList.add("selected");
         polli_live.respond(JSON.stringify({ poll_id, data: option }));
+        localStorage.setItem(response_storage_key, option);
       }
-
-      document.getElementById("next-button").addEventListener("click", () => {
-        location.reload();
-      });
 
       setTimeout(main, 0);
     </script>
