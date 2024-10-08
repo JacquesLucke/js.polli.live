@@ -81,8 +81,12 @@
     </div>
 
     <script>
+      // These are replaced in `ContinuumPoll.get_poll_page`.
       let poll_id = "POLL_ID";
       let poll_options = "POLL_OPTIONS";
+
+      const response_storage_key = `polli-live-response-${poll_id}`;
+
       const vote_container_elem = document.getElementById("vote-container");
       const options_container_elem = document.getElementById("options");
 
@@ -97,8 +101,15 @@
 
         const slider_elem = document.getElementById("slider");
         slider_elem.addEventListener("input", () => {
+          const value = slider.value;
           polli_live.respond(JSON.stringify({ poll_id, data: slider.value }));
+          localStorage.setItem(response_storage_key, value);
         });
+
+        const old_value = localStorage.getItem(response_storage_key);
+        if (old_value !== null) {
+          slider_elem.value = old_value;
+        }
       }
 
       setTimeout(main, 0);
