@@ -97,11 +97,22 @@
         options_container_elem.appendChild(option_elem);
       }
 
+      let last_send_time = 0;
+      const min_send_interval = 100;
+
       async function main() {
         polli_live.auto_reload();
 
         const slider_elem = document.getElementById("slider");
         slider_elem.addEventListener("input", () => {
+          const current_time = Date.now();
+          const time_since_last_send = current_time - last_send_time;
+          if (time_since_last_send < min_send_interval) {
+            // Limit the rate of sending responses.
+            return;
+          }
+          last_send_time = current_time;
+
           const value = slider.value;
           polli_live.respond(JSON.stringify({ poll_id, data: slider.value }));
           localStorage.setItem(response_storage_key, value);
