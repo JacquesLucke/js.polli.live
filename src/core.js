@@ -9,6 +9,7 @@ export function initialize(options) {
   options = {
     server: "https://polli.live",
     min_poll_interval_ms: 100,
+    passive_receiver: is_passive_receiver_by_default(),
     ...options,
   };
 
@@ -22,6 +23,7 @@ export function initialize(options) {
     options.server,
     globals.responses,
     "polli-live",
+    options.passive_receiver,
     polli_live_session_changed,
     polli_live_has_new_responses
   );
@@ -50,6 +52,22 @@ export function initialize(options) {
       }
     });
   }
+}
+
+function is_passive_receiver_by_default() {
+  return is_revealjs_speaker_view();
+}
+
+function is_revealjs_speaker_view() {
+  if (!top) {
+    return false;
+  }
+  const body_elem = top.document.querySelector("body");
+  if (!body_elem) {
+    return false;
+  }
+  const is_speaker_view = body_elem.hasAttribute("data-speaker-layout");
+  return is_speaker_view;
 }
 
 function response_is_valid(poll_id, response_data) {

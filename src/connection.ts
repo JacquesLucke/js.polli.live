@@ -20,17 +20,20 @@ export class PolliLiveConnection {
   should_fetch_responses: boolean;
   last_set_page: string | null;
   last_fetch_loop_interval: number;
+  passive_receiver: boolean;
 
   constructor(
     url: string,
     responses: PollResponses,
     local_storage_key: string,
+    passive_receiver: boolean,
     on_session_change: () => void,
     on_response_change: () => void
   ) {
     this.url = url;
     this.responses = responses;
     this.local_storage_key = local_storage_key;
+    this.passive_receiver = passive_receiver;
     this.on_session_change = on_session_change;
     this.on_response_change = on_response_change;
     this.session = null;
@@ -56,8 +59,20 @@ export class PolliLiveConnection {
     this.session = null;
     this.token = null;
     this.next_response = 0;
+    let desired_session = localStorage.getItem(this.local_storage_key);
+    if (this.passive_receiver) {
+      // Just try to use the session from local storage when the current instance is a passive receiver.
+      if (desired_session) {
+        try {
+          const parsed_session = JSON.parse(desired_session);
+          this.session = parsed_session.session;
+          this.token = parsed_session.token;
+        } catch {}
+        this.on_session_change();
+      }
+      return;
+    }
     try {
-      let desired_session = localStorage.getItem(this.local_storage_key);
       const res = await fetch(`${this.url}/new`, {
         method: "POST",
         headers: {
@@ -88,6 +103,11 @@ export class PolliLiveConnection {
   }
 
   async set_page(page: string) {
+    if (this.passive_receiver) {
+      // Never update the page if this is a passive receiver.
+      return;
+    }
+
     this.last_set_page = page;
     if (!this.session || !this.token) {
       return false;
