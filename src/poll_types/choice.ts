@@ -14,7 +14,6 @@ export class ChoicePoll {
   multiple_choice: boolean;
   allow_more_responses: boolean;
 
-  options_container: HTMLDivElement;
   result_elem: HTMLDivElement;
 
   constructor(poll_container: HTMLElement) {
@@ -40,27 +39,6 @@ export class ChoicePoll {
 
   initialize() {
     this.container.innerHTML = "";
-
-    if (this.hide_answer_initially) {
-      this.options_container = document.createElement("div");
-      this.container.appendChild(this.options_container);
-      this.options_container.style.display = "flex";
-
-      for (let option_i = 0; option_i < this.options.length; option_i++) {
-        const option_elem = document.createElement("div");
-        this.options_container.appendChild(option_elem);
-        option_elem.innerHTML = this.options_html[option_i];
-        option_elem.style.cssText = `
-              background-color: ${this.option_colors[option_i]};
-              border-radius: 0.3em;
-              width: fit-content;
-              margin-left: 1em;
-              padding: 0.3em;
-              font-size: 70%;
-              text-shadow: black 0 0 2px;
-            `;
-      }
-    }
 
     this.result_elem = document.createElement("div");
     this.container.appendChild(this.result_elem);
@@ -100,14 +78,29 @@ export class ChoicePoll {
       }
     }
 
-    const sorted_options = [...this.options];
-    if (this.hide_answer_initially) {
-      // Sort by count in case the results should be hidden initially.
-      // Otherwise, it's obvious which bar corresponds to which option.
-      sorted_options.sort(
-        (a, b) => count_by_option.get(b) - count_by_option.get(a)
-      );
+    if (!this.answers_revealed) {
+      const votes_elem = document.createElement("div");
+      this.result_elem.appendChild(votes_elem);
+      votes_elem.style.cssText = `
+            cursor: pointer;
+          `;
+      console.log("update");
+      votes_elem.innerHTML = `Responses: ${responses_num}`;
+      votes_elem.addEventListener("click", async () => {
+        console.log(this);
+        this.answers_revealed = true;
+        this.update_with_responses(response_by_user);
+        this.allow_more_responses = false;
+      });
+      return;
     }
+
+    const sorted_options = [...this.options];
+    // Sort by count in case the results should be hidden initially.
+    // Otherwise, it's obvious which bar corresponds to which option.
+    sorted_options.sort(
+      (a, b) => count_by_option.get(b) - count_by_option.get(a)
+    );
 
     for (const option of sorted_options) {
       const option_i = this.options.indexOf(option);
@@ -141,7 +134,6 @@ export class ChoicePoll {
       if (!this.answers_revealed) {
         option_elem.addEventListener("click", async () => {
           this.answers_revealed = true;
-          this.options_container.style.display = "None";
           this.update_with_responses(response_by_user);
           this.allow_more_responses = false;
         });
