@@ -1,6 +1,8 @@
 import html_template from "./choice.html";
 import { create_join_elem } from "../core";
 
+declare var Reveal: any;
+
 export class ChoicePoll {
   static class_name = "polli-live-choice";
 
@@ -88,10 +90,12 @@ export class ChoicePoll {
       console.log("update");
       votes_elem.innerHTML = `Responses: ${responses_num}`;
       votes_elem.addEventListener("click", async () => {
-        console.log(this);
         this.answers_revealed = true;
         this.update_with_responses(response_by_user);
         this.allow_more_responses = false;
+        if (typeof Reveal !== "undefined") {
+          Reveal.layout();
+        }
       });
       return;
     }
@@ -125,13 +129,6 @@ export class ChoicePoll {
       } else {
         option_elem.innerHTML = `${count}`;
         option_elem.style.backgroundColor = "#464646";
-      }
-      if (!this.answers_revealed) {
-        option_elem.addEventListener("click", async () => {
-          this.answers_revealed = true;
-          this.update_with_responses(response_by_user);
-          this.allow_more_responses = false;
-        });
       }
     }
   }
