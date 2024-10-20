@@ -87,7 +87,6 @@ export class ChoicePoll {
       votes_elem.style.cssText = `
             cursor: pointer;
           `;
-      console.log("update");
       votes_elem.innerHTML = `Responses: ${responses_num}`;
       votes_elem.addEventListener("click", async () => {
         this.answers_revealed = true;
