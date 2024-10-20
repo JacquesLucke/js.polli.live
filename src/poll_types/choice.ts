@@ -97,14 +97,7 @@ export class ChoicePoll {
     }
     this.join_elem.style.display = "none";
 
-    const sorted_options = [...this.options];
-    // Sort by count in case the results should be hidden initially.
-    // Otherwise, it's obvious which bar corresponds to which option.
-    sorted_options.sort(
-      (a, b) => count_by_option.get(b) - count_by_option.get(a)
-    );
-
-    for (const option of sorted_options) {
+    for (const option of this.options) {
       const option_i = this.options.indexOf(option);
       const option_html = this.options_html[option_i];
       const count = count_by_option.get(option);
