@@ -15,6 +15,7 @@ export class ChoicePoll {
   allow_more_responses: boolean;
 
   result_elem: HTMLDivElement;
+  join_elem: HTMLDivElement;
 
   constructor(poll_container: HTMLElement) {
     this.container = poll_container;
@@ -43,8 +44,8 @@ export class ChoicePoll {
     this.result_elem = document.createElement("div");
     this.container.appendChild(this.result_elem);
 
-    const join_elem = create_join_elem();
-    this.container.appendChild(join_elem);
+    this.join_elem = create_join_elem();
+    this.container.appendChild(this.join_elem);
   }
 
   update_with_responses(response_by_user: Map<string, string>) {
@@ -94,6 +95,7 @@ export class ChoicePoll {
       });
       return;
     }
+    this.join_elem.style.display = "none";
 
     const sorted_options = [...this.options];
     // Sort by count in case the results should be hidden initially.
