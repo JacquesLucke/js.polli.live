@@ -115,7 +115,7 @@ export class ChoicePoll {
             margin: 0.3em;
             border-radius: 0.3em;
             overflow: visible;
-            textShadow: black 0 0 2px;
+            text-shadow: black 0 0 2px;
             cursor: pointer;
           `;
 
